@@ -78,7 +78,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           </div>
         ) : (
           // Message List
-          <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+          <div className="max-w-3xl sm:max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-8">
             {messages.map((msg) => (
               <ChatMessage
                 key={msg._id}
