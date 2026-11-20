@@ -18,6 +18,38 @@ import { VALID_TONES, Tone, ChatMessage } from '../types';
 
 const MAX_PROMPT_LENGTH = 10000;
 
+function formatAiErrorMessage(error: any): { message: string; status: number } {
+  const status = error?.status || error?.statusCode || 500;
+  const rawMessage = error?.message || 'AI service error';
+
+  if (status === 401) {
+    return {
+      status,
+      message:
+        'Groq API authentication failed (401 Unauthorized). Please verify that GROQ_API_KEY in backend/.env is a valid key from https://console.groq.com/keys.',
+    };
+  }
+
+  if (status === 404) {
+    return {
+      status,
+      message: `Model or endpoint not found (404). Please verify your OPENAI_MODEL and OPENAI_BASE_URL. Details: ${rawMessage}`,
+    };
+  }
+
+  if (status === 429) {
+    return {
+      status,
+      message: 'Groq rate limit exceeded (429 Too Many Requests). Please wait a moment and try again.',
+    };
+  }
+
+  return {
+    status,
+    message: `AI service error (${status}): ${rawMessage}`,
+  };
+}
+
 export const sendMessageHandler = async (
   req: Request,
   res: Response,
@@ -97,9 +129,21 @@ export const sendMessageHandler = async (
     let fullResponse = '';
     try {
       fullResponse = await streamChatResponse(res, chatMessages, tone as Tone);
-    } catch (streamError) {
+    } catch (streamError: any) {
+      const errInfo = formatAiErrorMessage(streamError);
+      console.error('❌ [chatController:send] Stream error:');
+      console.error(`   Status: ${errInfo.status}`);
+      console.error(`   Message: ${streamError?.message || String(streamError)}`);
+      if (streamError?.error) {
+        console.error('   Error payload:', JSON.stringify(streamError.error, null, 2));
+      }
+
       res.write(
-        `data: ${JSON.stringify({ type: 'error', error: 'AI service error' })}\n\n`
+        `data: ${JSON.stringify({
+          type: 'error',
+          error: errInfo.message,
+          status: errInfo.status,
+        })}\n\n`
       );
       res.end();
       return;
@@ -204,9 +248,21 @@ export const regenerateResponseHandler = async (
     let fullResponse = '';
     try {
       fullResponse = await streamChatResponse(res, chatMessages, tone as Tone);
-    } catch {
+    } catch (streamError: any) {
+      const errInfo = formatAiErrorMessage(streamError);
+      console.error('❌ [chatController:regenerate] Stream error:');
+      console.error(`   Status: ${errInfo.status}`);
+      console.error(`   Message: ${streamError?.message || String(streamError)}`);
+      if (streamError?.error) {
+        console.error('   Error payload:', JSON.stringify(streamError.error, null, 2));
+      }
+
       res.write(
-        `data: ${JSON.stringify({ type: 'error', error: 'AI service error' })}\n\n`
+        `data: ${JSON.stringify({
+          type: 'error',
+          error: errInfo.message,
+          status: errInfo.status,
+        })}\n\n`
       );
       res.end();
       return;
@@ -231,4 +287,3 @@ export const regenerateResponseHandler = async (
     next(error);
   }
 };
-

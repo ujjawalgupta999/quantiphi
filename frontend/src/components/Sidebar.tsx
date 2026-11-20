@@ -67,7 +67,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           </div>
           <div>
             <h1 className="text-sm font-bold text-white">AI Assistant</h1>
-            <p className="text-xs text-gray-500">Powered by OpenAI</p>
+            <p className="text-xs text-gray-500">Powered by Groq (Llama 3.3 70B)</p>
           </div>
         </div>
 

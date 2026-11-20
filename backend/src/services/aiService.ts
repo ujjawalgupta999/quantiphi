@@ -4,15 +4,20 @@ import { ChatMessage, Tone } from '../types';
 import { getSystemPrompt, getFollowUpPrompt } from '../utils/toneInstructions';
 import { env } from '../config/env';
 
-// Lazy singleton — initialized on first request so env is guaranteed loaded
+// Lazy singleton — initialized on first request with Groq configuration
 let groqClient: OpenAI | null = null;
 
 const getClient = (): OpenAI => {
   if (!groqClient) {
-    // Uses OpenAI SDK with Groq's OpenAI-compatible endpoint
+    const apiKey = env.GROQ_API_KEY || env.OPENAI_API_KEY;
+    if (!apiKey) {
+      throw new Error('GROQ_API_KEY / OPENAI_API_KEY is not set');
+    }
+
+    // OpenAI SDK configured with Groq's endpoint
     groqClient = new OpenAI({
-      apiKey: env.OPENAI_API_KEY,
-      baseURL: env.OPENAI_BASE_URL,
+      apiKey,
+      baseURL: env.OPENAI_BASE_URL || 'https://api.groq.com/openai/v1',
     });
   }
   return groqClient;
@@ -24,7 +29,7 @@ export const streamChatResponse = async (
   tone: Tone
 ): Promise<string> => {
   const client = getClient();
-  const model = env.OPENAI_MODEL;
+  const model = env.OPENAI_MODEL || 'llama-3.3-70b-versatile';
 
   const systemMessage: ChatMessage = {
     role: 'system',
@@ -33,36 +38,46 @@ export const streamChatResponse = async (
 
   const fullMessages = [systemMessage, ...messages];
 
-  const stream = await client.chat.completions.create({
-    model,
-    messages: fullMessages,
-    stream: true,
-    max_tokens: 2000,
-    temperature: 0.7,
-  });
+  try {
+    const stream = await client.chat.completions.create({
+      model,
+      messages: fullMessages,
+      stream: true,
+      max_tokens: 2000,
+      temperature: 0.7,
+    });
 
-  let fullContent = '';
+    let fullContent = '';
 
-  for await (const chunk of stream) {
-    const delta = chunk.choices[0]?.delta?.content || '';
-    if (delta) {
-      fullContent += delta;
-      res.write(`data: ${JSON.stringify({ type: 'chunk', content: delta })}\n\n`);
+    for await (const chunk of stream) {
+      const delta = chunk.choices[0]?.delta?.content || '';
+      if (delta) {
+        fullContent += delta;
+        res.write(`data: ${JSON.stringify({ type: 'chunk', content: delta })}\n\n`);
+      }
+
+      if (chunk.choices[0]?.finish_reason === 'stop') {
+        break;
+      }
     }
 
-    if (chunk.choices[0]?.finish_reason === 'stop') {
-      break;
+    return fullContent;
+  } catch (error: any) {
+    console.error('❌ [aiService] Groq chat completion stream failed:');
+    console.error(`   Status: ${error?.status || error?.statusCode || 'N/A'}`);
+    console.error(`   Message: ${error?.message || String(error)}`);
+    if (error?.error) {
+      console.error('   Error payload:', JSON.stringify(error.error, null, 2));
     }
+    throw error;
   }
-
-  return fullContent;
 };
 
 export const generateFollowUpSuggestions = async (
   messages: ChatMessage[]
 ): Promise<string[]> => {
   const client = getClient();
-  const model = env.OPENAI_MODEL;
+  const model = env.OPENAI_MODEL || 'llama-3.3-70b-versatile';
 
   const followUpMessage: ChatMessage = {
     role: 'user',
@@ -83,14 +98,16 @@ export const generateFollowUpSuggestions = async (
       return parsed.slice(0, 3).filter((s): s is string => typeof s === 'string');
     }
     return [];
-  } catch {
+  } catch (error: any) {
+    console.error('⚠️ [aiService] Follow-up suggestion generation failed:');
+    console.error(`   Status: ${error?.status || 'N/A'}, Message: ${error?.message || error}`);
     return [];
   }
 };
 
 export const generateTitleFromPrompt = async (prompt: string): Promise<string> => {
   const client = getClient();
-  const model = env.OPENAI_MODEL;
+  const model = env.OPENAI_MODEL || 'llama-3.3-70b-versatile';
 
   try {
     const response = await client.chat.completions.create({
@@ -105,7 +122,9 @@ export const generateTitleFromPrompt = async (prompt: string): Promise<string> =
       temperature: 0.5,
     });
     return response.choices[0]?.message?.content?.trim() || prompt.substring(0, 50);
-  } catch {
+  } catch (error: any) {
+    console.error('⚠️ [aiService] Title generation fallback used:');
+    console.error(`   Status: ${error?.status || 'N/A'}, Message: ${error?.message || error}`);
     return prompt.length > 50 ? prompt.substring(0, 47) + '...' : prompt;
   }
 };
