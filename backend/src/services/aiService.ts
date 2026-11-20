@@ -2,16 +2,20 @@ import OpenAI from 'openai';
 import { Response } from 'express';
 import { ChatMessage, Tone } from '../types';
 import { getSystemPrompt, getFollowUpPrompt } from '../utils/toneInstructions';
+import { env } from '../config/env';
 
-let openaiClient: OpenAI | null = null;
+// Lazy singleton — initialized on first request so env is guaranteed loaded
+let groqClient: OpenAI | null = null;
 
 const getClient = (): OpenAI => {
-  if (!openaiClient) {
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) throw new Error('OPENAI_API_KEY is not set');
-    openaiClient = new OpenAI({ apiKey });
+  if (!groqClient) {
+    // Uses OpenAI SDK with Groq's OpenAI-compatible endpoint
+    groqClient = new OpenAI({
+      apiKey: env.OPENAI_API_KEY,
+      baseURL: env.OPENAI_BASE_URL,
+    });
   }
-  return openaiClient;
+  return groqClient;
 };
 
 export const streamChatResponse = async (
@@ -20,7 +24,7 @@ export const streamChatResponse = async (
   tone: Tone
 ): Promise<string> => {
   const client = getClient();
-  const model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+  const model = env.OPENAI_MODEL;
 
   const systemMessage: ChatMessage = {
     role: 'system',
@@ -58,7 +62,7 @@ export const generateFollowUpSuggestions = async (
   messages: ChatMessage[]
 ): Promise<string[]> => {
   const client = getClient();
-  const model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+  const model = env.OPENAI_MODEL;
 
   const followUpMessage: ChatMessage = {
     role: 'user',
@@ -86,7 +90,7 @@ export const generateFollowUpSuggestions = async (
 
 export const generateTitleFromPrompt = async (prompt: string): Promise<string> => {
   const client = getClient();
-  const model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+  const model = env.OPENAI_MODEL;
 
   try {
     const response = await client.chat.completions.create({
@@ -105,4 +109,3 @@ export const generateTitleFromPrompt = async (prompt: string): Promise<string> =
     return prompt.length > 50 ? prompt.substring(0, 47) + '...' : prompt;
   }
 };
-
