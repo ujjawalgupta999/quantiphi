@@ -80,3 +80,4 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend, onStop, isStreaming }) =>
 };
 
 export default ChatInput;
+

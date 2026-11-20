@@ -86,3 +86,4 @@
 .prose-content code {
   @apply block p-4 text-xs font-mono text-gray-300 overflow-x-auto leading-relaxed whitespace-pre;
 }
+

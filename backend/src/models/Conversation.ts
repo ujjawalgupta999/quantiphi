@@ -29,3 +29,4 @@ const ConversationSchema: Schema = new Schema(
 ConversationSchema.index({ updatedAt: -1 });
 
 export default mongoose.model<IConversation>('Conversation', ConversationSchema);
+

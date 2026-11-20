@@ -18,3 +18,4 @@ export const getFollowUpPrompt = (): string => {
 Return ONLY a JSON array of strings with the questions, nothing else. 
 Example: ["What is X?", "How does Y work?", "Can you explain Z?"]`;
 };
+

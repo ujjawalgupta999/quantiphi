@@ -105,3 +105,4 @@ export const generateTitleFromPrompt = async (prompt: string): Promise<string> =
     return prompt.length > 50 ? prompt.substring(0, 47) + '...' : prompt;
   }
 };
+

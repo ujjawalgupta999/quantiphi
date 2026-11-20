@@ -28,3 +28,4 @@ export interface StreamEvent {
   suggestions?: string[];
   error?: string;
 }
+

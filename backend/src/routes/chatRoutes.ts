@@ -10,3 +10,4 @@ router.post('/send', sendMessageHandler);
 router.post('/regenerate', regenerateResponseHandler);
 
 export default router;
+

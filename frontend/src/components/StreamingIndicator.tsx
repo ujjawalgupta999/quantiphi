@@ -15,3 +15,4 @@ const StreamingIndicator: React.FC = () => {
 };
 
 export default StreamingIndicator;
+

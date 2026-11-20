@@ -35,3 +35,4 @@ export const notFoundHandler = (
     error: `Route ${req.originalUrl} not found`,
   });
 };
+
