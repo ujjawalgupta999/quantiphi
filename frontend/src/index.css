@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    @apply bg-gray-900 text-white antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Scrollbar */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  @apply bg-white/10 rounded-full;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  @apply bg-white/20;
+}
+
+/* Markdown prose styles */
+.prose-content {
+  @apply text-gray-100;
+}
+
+.prose-content .md-h1 {
+  @apply text-xl font-bold text-white mt-4 mb-2;
+}
+.prose-content .md-h2 {
+  @apply text-lg font-semibold text-white mt-3 mb-2;
+}
+.prose-content .md-h3 {
+  @apply text-base font-semibold text-gray-200 mt-3 mb-1;
+}
+.prose-content .md-p {
+  @apply mb-2 leading-relaxed;
+}
+.prose-content .md-ul {
+  @apply list-disc list-inside mb-2 space-y-1;
+}
+.prose-content .md-li {
+  @apply text-gray-200;
+}
+.prose-content .md-hr {
+  @apply border-white/10 my-3;
+}
+.prose-content strong {
+  @apply font-semibold text-white;
+}
+.prose-content em {
+  @apply italic text-gray-300;
+}
+
+/* Inline code */
+.prose-content .inline-code {
+  @apply bg-gray-700/70 text-indigo-300 px-1.5 py-0.5 rounded text-xs font-mono;
+}
+
+/* Code blocks */
+.prose-content .code-block {
+  @apply bg-gray-900 border border-white/10 rounded-xl overflow-hidden my-3;
+}
+.prose-content .code-header {
+  @apply flex items-center justify-between px-4 py-2 bg-gray-800/60 border-b border-white/5;
+}
+.prose-content .code-lang {
+  @apply text-xs text-gray-500 font-mono uppercase tracking-wide;
+}
+.prose-content .copy-code-btn {
+  @apply text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer bg-transparent border-none;
+}
+.prose-content code.language-javascript,
+.prose-content code.language-typescript,
+.prose-content code.language-python,
+.prose-content code.language-bash,
+.prose-content code.language-code,
+.prose-content code {
+  @apply block p-4 text-xs font-mono text-gray-300 overflow-x-auto leading-relaxed whitespace-pre;
+}
