@@ -39,6 +39,12 @@ export const chatApi = {
       method: 'DELETE',
     }),
 
+  updateTone: (id: string, tone: Tone) =>
+    request<{ success: boolean; data: Conversation }>(`/api/conversations/${id}/tone`, {
+      method: 'PATCH',
+      body: JSON.stringify({ tone }),
+    }),
+
   // Chat - returns a ReadableStream
   sendMessage: async (
     conversationId: string | null,

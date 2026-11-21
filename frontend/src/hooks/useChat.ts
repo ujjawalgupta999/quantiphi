@@ -293,9 +293,23 @@ export function useChat() {
     [activeConversation, isStreaming, tone]
   );
 
-  const changeTone = useCallback((newTone: Tone) => {
-    setTone(newTone);
-  }, []);
+  const changeTone = useCallback(
+    async (newTone: Tone) => {
+      setTone(newTone);
+      if (activeConversation) {
+        setActiveConversation((prev) => (prev ? { ...prev, tone: newTone } : null));
+        setConversations((prev) =>
+          prev.map((c) => (c._id === activeConversation._id ? { ...c, tone: newTone } : c))
+        );
+        try {
+          await chatApi.updateTone(activeConversation._id, newTone);
+        } catch (err) {
+          console.error('Failed to update conversation tone:', err);
+        }
+      }
+    },
+    [activeConversation]
+  );
 
   const filteredConversations = searchQuery.trim()
     ? conversations.filter((c) =>

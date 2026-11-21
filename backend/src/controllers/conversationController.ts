@@ -87,3 +87,30 @@ export const deleteConversationHandler = async (
   }
 };
 
+export const updateConversationToneHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { tone } = req.body;
+
+    if (!VALID_TONES.includes(tone)) {
+      res.status(400).json({ success: false, error: 'Invalid tone value' });
+      return;
+    }
+
+    const { updateConversationTone } = await import('../services/conversationService');
+    const updated = await updateConversationTone(id, tone);
+    if (!updated) {
+      res.status(404).json({ success: false, error: 'Conversation not found' });
+      return;
+    }
+
+    res.json({ success: true, data: updated });
+  } catch (error) {
+    next(error);
+  }
+};
+

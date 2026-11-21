@@ -10,6 +10,7 @@ interface ChatWindowProps {
   isStreaming: boolean;
   error: string | null;
   tone: Tone;
+  onChangeTone: (tone: Tone) => void;
   onSendMessage: (content: string) => void;
   onStopStreaming: () => void;
   onRegenerate: (messageId: string) => void;
@@ -29,6 +30,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   activeConversation,
   isStreaming,
   error,
+  tone,
+  onChangeTone,
   onSendMessage,
   onStopStreaming,
   onRegenerate,
@@ -136,6 +139,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         onSend={onSendMessage}
         onStop={onStopStreaming}
         isStreaming={isStreaming}
+        tone={tone}
+        onChangeTone={onChangeTone}
       />
     </div>
   );

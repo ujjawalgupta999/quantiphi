@@ -102,6 +102,7 @@ const ChatPage: React.FC = () => {
           isStreaming={isStreaming}
           error={error}
           tone={tone}
+          onChangeTone={handleToneChange}
           onSendMessage={sendMessage}
           onStopStreaming={stopStreaming}
           onRegenerate={regenerateMessage}
