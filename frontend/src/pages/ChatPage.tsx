@@ -54,9 +54,9 @@ const ChatPage: React.FC = () => {
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 bg-black">
+      <div className="flex-1 flex flex-col min-w-0 bg-black relative">
         {/* Top Navigation */}
-        <header className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/90 backdrop-blur-sm">
+        <header className="relative z-40 flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/95 backdrop-blur-sm">
           <div className="flex items-center gap-3">
             {/* Mobile menu button */}
             <button

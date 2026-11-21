@@ -58,7 +58,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const isEmptyState = !activeConversation && messages.length === 0;
 
   return (
-    <div className="relative flex-1 flex flex-col min-w-0 h-full bg-black">
+    <div className="relative flex-1 flex flex-col min-w-0 h-full bg-black z-0">
       {/* Messages Scroll Area */}
       <div
         ref={scrollContainerRef}
