@@ -43,7 +43,7 @@ const ToneSelector: React.FC<ToneSelectorProps> = ({ tone, onChange, disabled })
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-52 rounded-xl bg-gray-900 border border-white/10 shadow-2xl z-50 overflow-hidden">
+        <div className="absolute right-0 top-full mt-2 w-52 rounded-xl bg-[#18181b] border border-white/10 shadow-2xl z-50 overflow-hidden">
           {toneOptions.map((opt) => (
             <button
               key={opt.value}
@@ -52,7 +52,7 @@ const ToneSelector: React.FC<ToneSelectorProps> = ({ tone, onChange, disabled })
                 setOpen(false);
               }}
               className={`w-full text-left px-4 py-3 flex flex-col gap-0.5 transition-colors hover:bg-white/5 ${
-                tone === opt.value ? 'bg-indigo-500/20 text-indigo-300' : 'text-gray-200'
+                tone === opt.value ? 'bg-blue-600/20 text-blue-300' : 'text-gray-200'
               }`}
             >
               <span className="font-medium text-sm">{opt.label}</span>

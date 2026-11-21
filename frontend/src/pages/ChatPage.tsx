@@ -33,7 +33,7 @@ const ChatPage: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-900 text-white overflow-hidden">
+    <div className="flex h-screen bg-black text-white overflow-hidden">
       {/* Sidebar */}
       <Sidebar
         conversations={conversations}
@@ -54,9 +54,9 @@ const ChatPage: React.FC = () => {
       />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 bg-black">
         {/* Top Navigation */}
-        <header className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-gray-900/80 backdrop-blur-sm">
+        <header className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/90 backdrop-blur-sm">
           <div className="flex items-center gap-3">
             {/* Mobile menu button */}
             <button

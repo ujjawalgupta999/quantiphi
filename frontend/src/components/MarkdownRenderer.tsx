@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
 import rehypeHighlight from 'rehype-highlight';
+import rehypeKatex from 'rehype-katex';
 import CodeBlock from './CodeBlock';
 import {
   MarkdownTable,
@@ -17,15 +19,25 @@ interface MarkdownRendererProps {
   isStreaming?: boolean;
 }
 
+// Convert \[ ... \] and \( ... \) to standard $$ ... $$ and $ ... $ for remark-math
+function normalizeMath(text: string): string {
+  if (!text) return '';
+  let processed = text.replace(/\\\[([\s\S]*?)\\\]/g, (_m, eq) => `\n$$\n${eq.trim()}\n$$\n`);
+  processed = processed.replace(/\\\(([\s\S]*?)\\\)/g, (_m, eq) => `$${eq.trim()}$`);
+  return processed;
+}
+
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
   content,
   isStreaming = false,
 }) => {
+  const formattedContent = useMemo(() => normalizeMath(content), [content]);
+
   return (
-    <div className="markdown-body text-gray-200 text-[15px] leading-relaxed break-words">
+    <div className="markdown-body text-[#ececec] text-[15.5px] leading-relaxed break-words font-normal">
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeHighlight]}
+        remarkPlugins={[remarkGfm, remarkMath]}
+        rehypePlugins={[rehypeHighlight, rehypeKatex]}
         components={{
           // Code Blocks and Inline Code
           pre: ({ children }) => <>{children}</>,
@@ -43,7 +55,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
 
             return (
               <code
-                className="px-1.5 py-0.5 mx-0.5 rounded-md bg-white/10 text-indigo-300 font-mono text-[0.875em] border border-white/5 font-normal"
+                className="px-1.5 py-0.5 mx-0.5 rounded-md bg-white/10 text-[#60a5fa] font-mono text-[0.875em] border border-white/5 font-normal"
                 {...props}
               >
                 {children}
@@ -58,36 +70,36 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
             </h1>
           ),
           h2: ({ children }) => (
-            <h2 className="text-lg sm:text-xl font-semibold text-white mt-5 mb-2.5 tracking-tight border-b border-white/10 pb-1.5 first:mt-0">
+            <h2 className="text-lg sm:text-xl font-bold text-white mt-5 mb-2.5 tracking-tight border-b border-white/10 pb-1.5 first:mt-0">
               {children}
             </h2>
           ),
           h3: ({ children }) => (
-            <h3 className="text-base sm:text-lg font-semibold text-gray-100 mt-4 mb-2 first:mt-0">
+            <h3 className="text-base sm:text-lg font-semibold text-white mt-4 mb-2 first:mt-0">
               {children}
             </h3>
           ),
           h4: ({ children }) => (
-            <h4 className="text-sm sm:text-base font-semibold text-gray-200 mt-3 mb-1.5 first:mt-0">
+            <h4 className="text-[15px] sm:text-base font-semibold text-white mt-3 mb-1.5 first:mt-0">
               {children}
             </h4>
           ),
 
           // Paragraphs
           p: ({ children }) => (
-            <p className="mb-3.5 leading-relaxed text-[15px] text-gray-200 last:mb-0">
+            <p className="mb-4 leading-relaxed text-[15.5px] text-[#ededed] last:mb-0">
               {children}
             </p>
           ),
 
           // Lists
           ul: ({ children }) => (
-            <ul className="list-disc list-outside ml-5 mb-3.5 space-y-1.5 text-[15px] text-gray-200">
+            <ul className="list-disc list-outside ml-5 mb-4 space-y-2 text-[15.5px] text-[#ededed]">
               {children}
             </ul>
           ),
           ol: ({ children }) => (
-            <ol className="list-decimal list-outside ml-5 mb-3.5 space-y-1.5 text-[15px] text-gray-200">
+            <ol className="list-decimal list-outside ml-5 mb-4 space-y-2 text-[15.5px] text-[#ededed]">
               {children}
             </ol>
           ),
@@ -103,7 +115,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
 
           // Blockquotes
           blockquote: ({ children }) => (
-            <blockquote className="border-l-4 border-indigo-500/70 bg-white/[0.02] pl-4 py-2 my-4 text-gray-300 italic rounded-r-lg">
+            <blockquote className="border-l-4 border-blue-500/70 bg-white/[0.02] pl-4 py-2 my-4 text-gray-300 italic rounded-r-lg">
               {children}
             </blockquote>
           ),
@@ -117,7 +129,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-indigo-400 hover:text-indigo-300 underline underline-offset-2 transition-colors font-medium break-all"
+              className="text-blue-400 hover:text-blue-300 underline underline-offset-2 transition-colors font-medium break-all"
             >
               {children}
             </a>
@@ -130,12 +142,12 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
           em: ({ children }) => <em className="italic text-gray-300">{children}</em>,
         }}
       >
-        {content}
+        {formattedContent}
       </ReactMarkdown>
 
       {/* Subtle typing cursor during streaming */}
       {isStreaming && (
-        <span className="inline-block w-2 h-4 ml-1 bg-indigo-400 animate-pulse align-middle rounded-sm" />
+        <span className="inline-block w-2 h-4 ml-1 bg-blue-500 animate-pulse align-middle rounded-sm" />
       )}
     </div>
   );

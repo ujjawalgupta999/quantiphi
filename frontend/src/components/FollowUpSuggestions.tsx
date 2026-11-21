@@ -26,7 +26,7 @@ const FollowUpSuggestions: React.FC<FollowUpSuggestionsProps> = ({
             key={i}
             onClick={() => !disabled && onSelect(suggestion)}
             disabled={disabled}
-            className="px-3 py-1.5 text-xs rounded-full border border-indigo-500/30 text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 hover:border-indigo-500/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-left"
+            className="px-3 py-1.5 text-xs rounded-full border border-blue-500/30 text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 hover:border-blue-500/50 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-left"
           >
             {suggestion}
           </button>
